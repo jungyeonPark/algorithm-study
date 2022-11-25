@@ -1,3 +1,4 @@
+//시간초과, 메모리초과...
 const readline = require("readline");
 const rl = readline.createInterface({
   input: process.stdin,
@@ -10,22 +11,7 @@ const chicken = [];
 const house = [];
 const isUsed = [];
 let selected = [];
-let combination = [];
 let min = 250000;
-
-const backTraking = (count) => {
-  if (count === M) {
-    combination.push([...selected]);
-    return;
-  }
-  for (let i = 0; i < chicken.length; i++) {
-    if (isUsed[i]) continue;
-    selected[count] = i;
-    isUsed[i] = 1;
-    backTraking(count + 1);
-    isUsed[i] = 0;
-  }
-};
 
 const calcDistance = (house, chicken) => {
   const [h_x, h_y] = house;
@@ -35,20 +21,28 @@ const calcDistance = (house, chicken) => {
   return x + y;
 };
 
-const answer = () => {
-  backTraking(0);
-  for (let i = 0; i < combination.length; i++) {
+const backTraking = (count) => {
+  if (count === M) {
     let city_min = 0;
     for (let j = 0; j < house.length; j++) {
       let house_min = 2500;
       for (let k = 0; k < M; k++) {
-        if (house_min > calcDistance(house[j], chicken[combination[i][k]])) {
-          house_min = calcDistance(house[j], chicken[combination[i][k]]);
+        let distance = calcDistance(house[j], chicken[selected[k]]);
+        if (house_min > distance) {
+          house_min = distance;
         }
       }
       city_min += house_min;
     }
     if (min > city_min) min = city_min;
+    return;
+  }
+  for (let i = 0; i < chicken.length; i++) {
+    if (isUsed[i]) continue;
+    isUsed[i] = 1;
+    selected[count] = i;
+    backTraking(count + 1);
+    isUsed[i] = 0;
   }
 };
 
@@ -65,7 +59,7 @@ rl.on("line", (line) => {
       if (j === "2") chicken.push([i_idx, j_idx]);
     })
   );
-  answer();
+  backTraking(0);
   console.log(min);
 
   process.exit();
