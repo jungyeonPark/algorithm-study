@@ -6,21 +6,15 @@ const rl = readline.createInterface({
 
 let N, S;
 let input = [];
-const used = [];
 let cnt = 0;
-let sum = 0;
 
-const func = (n, start) => {
-  if (n !== 0 && sum === S) cnt++;
-  if (n === N) return;
-  for (let i = start; i < N; i++) {
-    if (used[i]) continue;
-    used[i] = true;
-    sum += input[i];
-    func(n + 1, i + 1);
-    used[i] = false;
-    sum -= input[i];
+const func = (n, sum) => {
+  if (n === N) {
+    sum === S && cnt++;
+    return;
   }
+  func(n + 1, sum);
+  func(n + 1, sum + input[n + 1]);
 };
 
 rl.on("line", (line) => {
@@ -34,7 +28,9 @@ rl.on("line", (line) => {
     .shift()
     .split(" ")
     .map((i) => i * 1);
-  func(0, 0);
+  for (let i = 0; i < N; i++) {
+    func(i, input[i]);
+  }
   console.log(cnt);
   process.exit();
 });
