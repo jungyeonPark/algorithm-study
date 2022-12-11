@@ -1,4 +1,5 @@
 // 그리디인 척 하는 DP
+// 냅색 알고리즘
 const readline = require("readline");
 const rl = readline.createInterface({
   input: process.stdin,
@@ -10,21 +11,23 @@ let input = [];
 const DP = [];
 
 const func = () => {
-  for (let i = 0; i <= K; i++) {
-    DP[i] = 0;
+  for (let i = 0; i <= N; i++) {
+    DP.push([]);
+    for (let j = 0; j <= K; j++) {
+      DP[i][j] = 0; // 1번부터 i까지의 물건을 사용해서 j무게를 만들 때 가치의 최대값
+    }
   }
-  for (let i = 1; i <= K; i++) {
-    let max = DP[i - 1]; // 물건 무게를 합해서 i값이 딱 떨어지지 않을 수 있으니까 이전 최대값을 초기값으로 설정
-    for (let j = 0; j < N; j++) {
-      if (i === 4) console.log(max); // 같은 물건을 선택한 경우 처리 필요
-      if (input[j][0] <= i) {
-        max =
-          max < input[j][1] + DP[i - input[j][0]]
-            ? input[j][1] + DP[i - input[j][0]]
-            : max;
+  for (let i = 1; i <= N; i++) {
+    for (let j = 0; j <= K; j++) {
+      DP[i][j] = DP[i - 1][j]; // 이전 최대값을 초기값으로 설정
+      // j - input[i][0] 번 인덱스를 음수로 만들지 않기 위함
+      if (j - input[i][0] >= 0) {
+        DP[i][j] =
+          DP[i][j] < input[i][1] + DP[i - 1][j - input[i][0]] // 여기가 핵심: j - input[i]무게의 최댓값 + input[i]무게와 이전 최대값을 비교
+            ? input[i][1] + DP[i - 1][j - input[i][0]]
+            : DP[i][j];
       }
     }
-    DP[i] = max;
   }
 };
 
@@ -36,7 +39,8 @@ rl.on("line", (line) => {
     .split(" ")
     .map((i) => i * 1);
   input = input.map((i) => i.split(" ").map((j) => j * 1));
+  input.unshift([0, 0]); // 1 index로 맞춤
   func();
-  console.log(DP);
+  console.log(DP[N][K]);
   process.exit();
 });
