@@ -23,7 +23,7 @@ const func = () => {
       // j - input[i][0] 번 인덱스를 음수로 만들지 않기 위함
       if (j - input[i][0] >= 0) {
         DP[i][j] =
-          DP[i][j] < input[i][1] + DP[i - 1][j - input[i][0]] // 여기가 핵심: j - input[i]무게의 최댓값 + input[i]무게와 이전 최대값을 비교
+          DP[i][j] < input[i][1] + DP[i - 1][j - input[i][0]] // 여기가 핵심: j - "input[i]무게"의 최댓값 + input[i]무게와 이전 최대값을 비교
             ? input[i][1] + DP[i - 1][j - input[i][0]]
             : DP[i][j];
       }
